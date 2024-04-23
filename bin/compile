@@ -43,7 +43,7 @@ function download_and_extract() {
   }
   
   # Try downloading the file and extract
-  if ! curl -L "$url" | tar flag -C "$target_dir" --strip-components=1; then
+  if ! curl -L "$url" | tar "$flag" -C "$target_dir" --strip-components=1; then
     echo "Error: Failed to download or extract $url"
     exit 1
   fi
