@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+# #!/usr/bin/env bash
 
-# Check if a requirements.txt file exists
-if [[ -f "${1}/requirements.txt" ]]; then
-    # Check if the file contains references to GDAL, GEOS, or Proj
-    if grep -qE 'gdal|geos|proj' "${1}/requirements.txt"; then
-        exit 0  # Detected
-    fi
-fi
+# # Check if a requirements.txt file exists
+# if [[ -f "${1}/requirements.txt" ]]; then
+#     # Check if the file contains references to GDAL, GEOS, or Proj
+#     if grep -qE 'gdal|geos|proj' "${1}/requirements.txt"; then
+#         exit 0  # Detected
+#     fi
+# fi
 
-exit 1  # Not detected
+# exit 1  # Not detected
