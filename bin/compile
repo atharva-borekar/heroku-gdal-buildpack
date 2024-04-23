@@ -28,13 +28,20 @@ function indent() {
   esac
 }
 
+# Function to download and extract files
 function download_and_extract() {
-  url="$1"
-  target_dir="$2"
+  local url="$1"
+  local target_dir="$2"
 
   echo "Downloading and extracting $url to $target_dir"
-
-  # Try downloading the file
+  
+  # Create the target directory if it doesn't exist
+  mkdir -p "$target_dir" || {
+    echo "Error: Failed to create directory $target_dir"
+    exit 1
+  }
+  
+  # Try downloading the file and extract
   if ! curl -L "$url" | tar xz -C "$target_dir" --strip-components=1; then
     echo "Error: Failed to download or extract $url"
     exit 1
