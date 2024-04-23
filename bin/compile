@@ -40,9 +40,19 @@ function download_and_extract() {
     echo "Error: Failed to create directory $target_dir"
     exit 1
   }
-  
+
+  # Check the compression format of the downloaded file
+  if curl -sI "$url" | grep -q "Content-Type: application/x-gzip"; then
+    compression="z"
+  elif curl -sI "$url" | grep -q "Content-Type: application/x-bzip2"; then
+    compression="j"
+  else
+    echo "Error: Unknown compression format for $url"
+    exit 1
+  fi
+
   # Try downloading the file and extract
-  if ! curl -L "$url" | tar xz -C "$target_dir" --strip-components=1; then
+  if ! curl -L "$url" | tar "x${compression}" -C "$target_dir" --strip-components=1; then
     echo "Error: Failed to download or extract $url"
     exit 1
   fi
