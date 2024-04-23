@@ -17,7 +17,9 @@ BP_DIR=$(cd "$(dirname "${0:-}")"; cd .. || exit; pwd)
 
 # Setup profile file
 PROFILE_PATH="$BUILD_DIR/.profile.d/geo.sh"
-mkdir -p "$(dirname "$PROFILE_PATH")"
+
+# Ensure the directory exists
+mkdir -p "$BUILD_DIR/.profile.d"
 
 # Functions
 function indent() {
