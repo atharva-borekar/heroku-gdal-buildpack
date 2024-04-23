@@ -13,13 +13,11 @@ unset GIT_DIR
 # Parameters
 BUILD_DIR="$1"
 CACHE_DIR="${2}/${STACK}"
-BP_DIR=$(cd "$(dirname "${0:-}")"; cd .. || exit; pwd)
 
+echo "-----> Creating .profile.d"
 # Setup profile file
-PROFILE_PATH="$BUILD_DIR/.profile.d/geo.sh"
-
-# Ensure the directory exists
 mkdir -p "$BUILD_DIR/.profile.d"
+echo "-----> Created .profile.d"
 
 # Functions
 function indent() {
@@ -51,40 +49,32 @@ function download_and_extract() {
   fi
 }
 
+# Function to set environment variables
+function export_variable() {
+  echo "export $1=\"$2\"" >> "$BUILD_DIR/.profile.d/geo.sh"
+}
+
 # Download and extract GDAL
 echo "-----> Downloading and vendoring GDAL"
-download_and_extract "https://download.osgeo.org/gdal/3.8.5/gdal-3.8.5.tar.gz" "$BUILD_DIR/vendor/gdal" "xz"
+download_and_extract "https://download.osgeo.org/gdal/3.8.5/gdal-3.8.5.tar.gz" "$BUILD_DIR/.heroku/vendor/gdal" "xz"
 
 # Download and extract GEOS
 echo "-----> Downloading and vendoring GEOS"
-download_and_extract "https://download.osgeo.org/geos/geos-3.11.2.tar.bz2" "$BUILD_DIR/vendor/geos" "xj"
+download_and_extract "https://download.osgeo.org/geos/geos-3.11.2.tar.bz2" "$BUILD_DIR/.heroku/vendor/geos" "xj"
 
 # Download and extract Proj
 echo "-----> Downloading and vendoring Proj"
-download_and_extract "https://download.osgeo.org/proj/proj-9.4.0.tar.gz" "$BUILD_DIR/vendor/proj" "xz"
-
-# Target vendor directory
-TARGET_VENDOR_DIR=".heroku/vendor"
-
-# Copy artifacts to the app directory
-mkdir -p "$BUILD_DIR/$TARGET_VENDOR_DIR"
-cp -r "$BUILD_DIR/vendor"/* "$BUILD_DIR/$TARGET_VENDOR_DIR"
-
-# App directories
-APP_VENDOR="/app/$TARGET_VENDOR_DIR"
+download_and_extract "https://download.osgeo.org/proj/proj-9.4.0.tar.gz" "$BUILD_DIR/.heroku/vendor/proj" "xz"
 
 # Set environment variables
-echo "export GEOS_LIBRARY_PATH=\"$APP_VENDOR/lib\"" >> "$PROFILE_PATH"
-echo "export GDAL_LIBRARY_PATH=\"$APP_VENDOR/lib\"" >> "$PROFILE_PATH"
-echo "export PROJ4_LIBRARY_PATH=\"$APP_VENDOR/lib\"" >> "$PROFILE_PATH"
-echo "export GDAL_DATA=\"$APP_VENDOR/share/gdal\"" >> "$PROFILE_PATH"
-
-# Export environment variables for the next build
-echo "BUNDLE_BUILD__RGEO=\"--with-opt-dir=$TARGET_VENDOR_DIR --with-geos-config=$TARGET_VENDOR_DIR/bin/geos-config\"" >> "$BP_DIR/export"
-echo "export BUNDLE_BUILD__RGEO" >> "$PROFILE_PATH"
-echo "export LIBRARY_PATH=\"$APP_VENDOR/lib\"" >> "$PROFILE_PATH"
-echo "export LD_LIBRARY_PATH=\"$APP_VENDOR/lib\"" >> "$PROFILE_PATH"
-echo "export CPATH=\"$APP_VENDOR/include\"" >> "$PROFILE_PATH"
-echo "export PATH=\"$APP_VENDOR/bin:\$PATH\"" >> "$PROFILE_PATH"
+export_variable "GEOS_LIBRARY_PATH" "$BUILD_DIR/.heroku/vendor/lib"
+export_variable "GDAL_LIBRARY_PATH" "$BUILD_DIR/.heroku/vendor/lib"
+export_variable "PROJ4_LIBRARY_PATH" "$BUILD_DIR/.heroku/vendor/lib"
+export_variable "GDAL_DATA" "$BUILD_DIR/.heroku/vendor/share/gdal"
+export_variable "BUNDLE_BUILD__RGEO" "--with-opt-dir=$BUILD_DIR/.heroku/vendor --with-geos-config=$BUILD_DIR/.heroku/vendor/bin/geos-config"
+export_variable "LIBRARY_PATH" "$BUILD_DIR/.heroku/vendor/lib"
+export_variable "LD_LIBRARY_PATH" "$BUILD_DIR/.heroku/vendor/lib"
+export_variable "CPATH" "$BUILD_DIR/.heroku/vendor/include"
+export_variable "PATH" "$BUILD_DIR/.heroku/vendor/bin:\$PATH"
 
 echo "-----> Vendoring geo libraries done"
