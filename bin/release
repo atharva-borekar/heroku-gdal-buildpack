@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
 
-# No release actions are needed for this buildpack
-echo "No release actions needed."
+# Output valid YAML content indicating no release actions are needed
+cat <<EOF
+default_process_types:
+  web: null
+EOF
