@@ -11,7 +11,7 @@ set -e
 unset GIT_DIR
 
 # Parameters
-BUILD_DIR=$1
+BUILD_DIR="$1"
 CACHE_DIR="${2}/${STACK}"
 BP_DIR=$(cd "$(dirname "${0:-}")"; cd .. || exit; pwd)
 
@@ -31,9 +31,14 @@ function indent() {
 function download_and_extract() {
   url="$1"
   target_dir="$2"
-  
-  mkdir -p "$target_dir"
-  curl -L "$url" | tar xz -C "$target_dir" --strip-components=1
+
+  echo "Downloading and extracting $url to $target_dir"
+
+  # Try downloading the file
+  if ! curl -L "$url" | tar xz -C "$target_dir" --strip-components=1; then
+    echo "Error: Failed to download or extract $url"
+    exit 1
+  fi
 }
 
 # Download and extract GDAL
