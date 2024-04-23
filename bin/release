@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# No release actions are needed for this buildpack
+echo "No release actions needed."
