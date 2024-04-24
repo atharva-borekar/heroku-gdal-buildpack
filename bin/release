@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# Output valid YAML content indicating no release actions are needed
-cat <<EOF
-default_process_types:
-  web: null
-EOF
